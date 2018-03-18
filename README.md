@@ -1,24 +1,28 @@
 # TempBanUI
-Advance Temporary Ban with UI
+## Advance Temporary Ban with UI
 
-# HOW TO INSTALL
+## HOW TO INSTALL
 * Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/26116/TempBanUI_dev-1.phar)
 * Step 2: Put it on your plugins folder
 * Step 3: Restart your server
 
-# COMMANDS
+## COMMANDS
 * /tban - Open TempBan UI
 
-# PERMISSIONS
+## PERMISSIONS
 * use.tban - Use /tban command
 
-# FEATURES
+## FEATURES
 * Message Config
 * SQLite3 Support
 
-# SUPPORT
+## SUPPORT
 [SUBSCRIBE NOW](https://www.youtube.com/channel/UCdz9zL45-G-rJETBVIGcT2Q)
 
 [![Support via PayPal](https://cdn.rawgit.com/twolfson/paypal-github-button/1.0.0/dist/button.svg)](https://www.paypal.me/freakingdev)
 
-
+## IMAGE
+![Picture 1](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic1.png)
+![Picture 2](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic2.png)
+![Picture 3](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic3.png)
+![Picture 4](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic4.png)
