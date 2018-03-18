@@ -19,7 +19,7 @@
 * SQLite3 Support
 
 ## IMAGE
-![Picture 1](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic1.png)
-![Picture 2](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic2.png)
-![Picture 3](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic3.png)
-![Picture 4](https://github.com/FreakingDev/TempBanUI/blob/master/Image/Pic4.png)
+![Picture 1](https://github.com/SonsaYT04/Image-and-Release/blob/master/Image/TempBanUI/Pic1.png)
+![Picture 2](https://github.com/SonsaYT04/Image-and-Release/blob/master/Image/TempBanUI/Pic2.png)
+![Picture 3](https://github.com/SonsaYT04/Image-and-Release/blob/master/Image/TempBanUI/Pic3.png)
+![Picture 4](https://github.com/SonsaYT04/Image-and-Release/blob/master/Image/TempBanUI/Pic4.png)
