@@ -4,7 +4,7 @@
 [![Support via PayPal](https://cdn.rawgit.com/twolfson/paypal-github-button/1.0.0/dist/button.svg)](https://www.paypal.me/freakingdev)
 
 ## HOW TO INSTALL
-* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/26116/TempBanUI_dev-1.phar)
+* Step 1: Download [TempBanUI.phar](https://github.com/FreakingDev/TempBanUI/raw/master/Release/TempBanUI_v1.phar)
 * Step 2: Put it on your plugins folder
 * Step 3: Restart your server
 
