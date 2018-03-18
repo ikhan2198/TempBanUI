@@ -1,7 +1,0 @@
---- # Poggit-CI Manifest. Open the CI at https://poggit.pmmp.io/ci/FreakingDev/TempBanUI
-branches:
-- master
-projects:
-  TempBanUI:
-    path: ""
-...
