@@ -95,43 +95,6 @@ class Main extends PluginBase implements Listener {
 					return true;
 				}
 			break;
-			
-			/*
-			TODO
-			
-			case "tcheck":
-				if($sender instanceof Player) {
-					if($sender->hasPermission("use.tcheck")){
-						$player = $sender->getName();
-						$banInfo = $this->db->query("SELECT * FROM banPlayers WHERE player = '$player';");
-						$array = $banInfo->fetchArray(SQLITE3_ASSOC);
-						if (!empty($array)) {
-							$banTime = $array['banTime'];
-							
-							$now = time();
-							$remainingTime = $banTime - $now;
-							
-							// DAY
-							$day = floor($remainingTime / 86400);
-							// HOUR
-							$hourSeconds = $remainingTime % 86400;
-							$hour = floor($hourSeconds / 3600);
-							// MINUTE
-							$minuteSec = $hourSeconds % 3600;
-							$minute = floor($minuteSec / 60);
-							// SECS
-							$remainingSec = $minuteSec % 60;
-							$second = ceil($remainingSec);
-							
-							$sender->sendMessage("Day: " . $day);
-							$sender->sendMessage("Hour: " . $hour);
-							$sender->sendMessage("Minute: " . $minute);
-							$sender->sendMessage("Second: " . $second);
-						}
-					}
-				}
-			break;
-			*/
 		}
 		return true;
     }
