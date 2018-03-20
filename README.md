@@ -13,9 +13,9 @@
 ---
 
 ## COMMANDS & PERMISSIONS
-| COMMAND  | DESCRIPTION     | PERMISSION |
-|----------|-----------------|------------|
-| /tban    | Open TempBan UI | use.tban   |
+| COMMAND | DESCRIPTION | PERMISSION |
+|---|---|---|
+| /tban | Open TempBan UI | use.tban |
 
 ---
 
