@@ -21,6 +21,9 @@
 ---
 
 ## FEATURES
+* Ban Player Temporary
+* Check Ban List
+* UnBan Player
 * Message Config
 * SQLite3 Support
 
