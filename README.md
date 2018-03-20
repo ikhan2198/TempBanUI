@@ -12,13 +12,10 @@
 
 ---
 
-## COMMANDS
-* /tban - Open TempBan UI
-
----
-
-## PERMISSIONS
-* use.tban - Use /tban command
+## COMMANDS & PERMISSIONS
+| COMMAND  | DESCRIPTION     | PERMISSION |
+|----------|-----------------|------------|
+| /tban    | Open TempBan UI | use.tban   |
 
 ---
 
