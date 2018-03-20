@@ -30,4 +30,6 @@
 ---
 
 ## IMAGE
-![Picture 1](https://github.com/SonsaYT04/Image-and-Release/blob/master/Image/TempBanUI/Pic1.png)
+![Picture 1](https://github.com/SonsaYT04/Image/blob/master/Image/TempBanUI/Pic1.png)
+![Picture 1](https://github.com/SonsaYT04/Image/blob/master/Image/TempBanUI/Pic2.png)
+
