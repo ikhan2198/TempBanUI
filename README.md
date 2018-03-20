@@ -30,6 +30,6 @@
 ---
 
 ## IMAGE
-![Picture 1]()
-
+![](https://github.com/SonsaYT04/Image/blob/master/Image/Image1.png)
+![](https://github.com/SonsaYT04/Image/blob/master/Image/Image2.png)
 
