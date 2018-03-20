@@ -16,6 +16,7 @@
 | COMMAND | DESCRIPTION | PERMISSION |
 |---|---|---|
 | /tban | Open TempBan UI | use.tban |
+| /tcheck | Check ban list | use.tcheck |
 
 ---
 
