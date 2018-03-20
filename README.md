@@ -6,7 +6,7 @@
 ---
 
 ## HOW TO INSTALL
-* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/26196/TempBanUI_dev-10.phar)
+* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/26260/TempBanUI_dev-20.phar)
 * Step 2: Put it on your plugins folder
 * Step 3: Restart your server
 
