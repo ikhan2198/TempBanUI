@@ -1,4 +1,4 @@
-# TempBanUI
+# TempBanUI [![](https://poggit.pmmp.io/shield.state/TempBanUI)](https://poggit.pmmp.io/p/TempBanUI)
 
 ## Advance Temporary Ban with UI
 ## [What's new?](https://github.com/SonsaYT04/TempBanUI/wiki)
@@ -6,7 +6,7 @@
 ---
 
 ## HOW TO INSTALL
-* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/26260/TempBanUI_dev-20.phar)
+* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/26356/TempBanUI.phar)
 * Step 2: Put it on your plugins folder
 * Step 3: Restart your server
 
