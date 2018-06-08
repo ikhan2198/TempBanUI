@@ -10,18 +10,12 @@ use pocketmine\command\CommandSender;
 
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerPreLoginEvent;
-use pocketmine\event\player\PlayerQuitEvent;
 
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
-use pocketmine\event\server\DataPacketReceiveEvent;
-use pocketmine\network\mcpe\protocol\ModalFormResponsePacket;
-
 class Main extends PluginBase implements Listener {
 
-	public $formCount = 0;
-	public $forms = [];
 	public $playerList = [];
 	public $targetPlayer;
 	
@@ -40,12 +34,10 @@ class Main extends PluginBase implements Listener {
 		"BanMyself" => "§cYou can't ban yourself",
 		"NoBanPlayers" => "§bNo ban players",
 		"UnBanPlayer" => "§b{player} has been unban",
-		
-		// TCHECK UI
+
 		"BanListTitle" => "§lBAN PLAYER LIST",
 		"BanListContent" => "Choose player",
-		
-		// INFO UI
+
 		"InfoUIContent" => "§dInformation: \nDay: §b{day} \n§dHour: §b{hour} \n§dMinute: §b{minute} \n§dSecond: §b{second} \n§dReason: §b{reason} \n\n\n",
 		"InfoUIUnBanButton" => "Unban Player",
 		
@@ -57,52 +49,7 @@ class Main extends PluginBase implements Listener {
 			case "tban":
 				if($sender instanceof Player) {
 					if($sender->hasPermission("use.tban")){
-						$form = $this->createCustomForm(function (Player $sender, array $data){
-							$result = $data[0];
-							if($result === null){
-								return true;
-							}
-							$c = 0;
-							foreach($this->playerList as $player){
-								if($result == $c){
-									$target = $player->getPlayer();	
-									if($target instanceof Player){
-										if($target->getName() == $sender->getName()){
-											$player->sendMessage($this->message["BanMyself"]);
-											return true;
-										}
-										$now = time();
-										$day = ($data[1] * 86400);
-										$hour = ($data[2] * 3600);
-										$min = ($data[3] * 60);
-										$banTime = $now + $day + $hour + $min;
-										$banInfo = $this->db->prepare("INSERT OR REPLACE INTO banPlayers (player, banTime, reason) VALUES (:player, :banTime, :reason);");
-										$banInfo->bindValue(":player", $target->getName());
-										$banInfo->bindValue(":banTime", $banTime);
-										$banInfo->bindValue(":reason", $data[4]);
-										$result = $banInfo->execute();
-										$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}"], [$data[1], $data[2], $data[3], $data[4]], $this->message["KickBanMessage"]));
-										$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4]], $this->message["BroadcastBanMessage"]));
-										foreach($this->playerList as $player){
-											unset($this->playerList[strtolower($player->getName())]);
-										}
-									}
-								}
-								$c++;
-							}
-						});
-						foreach($this->getServer()->getOnlinePlayers() as $player){
-							$player = $player->getPlayer();
-							$this->playerList[strtolower($player->getName())] = $player;
-							$list[] = $player->getName();
-						}
-						$form->setTitle(TextFormat::BOLD . "TEMPORARY BAN");
-						$form->addDropdown("\nChoose player", $list);
-						$form->addSlider("Day/s", 0, 30, 1);
-						$form->addSlider("Hour/s", 0, 24, 1);
-						$form->addSlider("Minute/s", 1, 60, 5);
-						$form->addInput("Reason");
-						$form->sendToPlayer($sender);
+						$this->openTbanUI($sender);
 					}
 				}
 				else{
@@ -114,40 +61,7 @@ class Main extends PluginBase implements Listener {
 			case "tcheck":
 				if($sender instanceof Player) {
 					if($sender->hasPermission("use.tcheck")){
-						$form = $this->createSimpleForm(function (Player $sender, array $data){
-						$result = $data[0];
-						if($result === null){
-							return true;
-						}
-							$banInfo = $this->db->query("SELECT * FROM banPlayers;");
-							$i = -1;
-							while ($resultArr = $banInfo->fetchArray(SQLITE3_ASSOC)) {
-								$j = $i + 1;
-								$banPlayer = $resultArr['player'];
-								$i = $i + 1;
-								if($result == $j){
-									$this->targetPlayer = $banPlayer;
-									$this->openInfoUI($sender);
-								}
-							}
-						});
-						$banInfo = $this->db->query("SELECT * FROM banPlayers;");
-						$array = $banInfo->fetchArray(SQLITE3_ASSOC);	
-						if (empty($array)) {
-							$sender->sendMessage($this->message["NoBanPlayers"]);
-							return true;
-						}
-						$form->setTitle($this->message["BanListTitle"]);
-						$form->setContent($this->message["BanListContent"]);
-						$banInfo = $this->db->query("SELECT * FROM banPlayers;");
-						$i = -1;
-						while ($resultArr = $banInfo->fetchArray(SQLITE3_ASSOC)) {
-							$j = $i + 1;
-							$banPlayer = $resultArr['player'];
-							$form->addButton(TextFormat::BOLD . "$banPlayer");
-							$i = $i + 1;
-						}
-						$form->sendToPlayer($sender);
+						$this->openTcheckUI($sender);
 					}
 				}
 			break;
@@ -156,9 +70,100 @@ class Main extends PluginBase implements Listener {
 		return true;
     }
 	
+	public function openTbanUI($sender){
+		$api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
+		$form = $api->createCustomForm(function (Player $sender, array $data = null){
+			$result = $data[0];
+			if($result === null){
+				return true;
+			}
+			$c = 0;
+			foreach($this->playerList as $player){
+				if($result == $c){
+					$target = $player->getPlayer();	
+					if($target instanceof Player){
+						if($target->getName() == $sender->getName()){
+							$player->sendMessage($this->message["BanMyself"]);
+							return true;
+						}
+						$now = time();
+						$day = ($data[1] * 86400);
+						$hour = ($data[2] * 3600);
+						$min = ($data[3] * 60);
+						$banTime = $now + $day + $hour + $min;
+						$banInfo = $this->db->prepare("INSERT OR REPLACE INTO banPlayers (player, banTime, reason) VALUES (:player, :banTime, :reason);");
+						$banInfo->bindValue(":player", $target->getName());
+						$banInfo->bindValue(":banTime", $banTime);
+						$banInfo->bindValue(":reason", $data[4]);
+						$result = $banInfo->execute();
+						$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}"], [$data[1], $data[2], $data[3], $data[4]], $this->message["KickBanMessage"]));
+						$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4]], $this->message["BroadcastBanMessage"]));
+						foreach($this->playerList as $player){
+							unset($this->playerList[strtolower($player->getName())]);
+						}
+					}
+				}
+				$c++;
+			}
+		});
+		foreach($this->getServer()->getOnlinePlayers() as $player){
+			$player = $player->getPlayer();
+			$this->playerList[strtolower($player->getName())] = $player;
+			$list[] = $player->getName();
+		}
+		$form->setTitle(TextFormat::BOLD . "TEMPORARY BAN");
+		$form->addDropdown("\nChoose player", $list);
+		$form->addSlider("Day/s", 0, 30, 1);
+		$form->addSlider("Hour/s", 0, 24, 1);
+		$form->addSlider("Minute/s", 1, 60, 5);
+		$form->addInput("Reason");
+		$form->sendToPlayer($sender);
+		return $form;
+	}
+	
+	public function openTcheckUI($sender){
+		$api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
+		$form = $api->createSimpleForm(function (Player $sender, int $data = null){
+		$result = $data;
+		if($result === null){
+			return true;
+		}
+			$banInfo = $this->db->query("SELECT * FROM banPlayers;");
+			$i = -1;
+			while ($resultArr = $banInfo->fetchArray(SQLITE3_ASSOC)) {
+				$j = $i + 1;
+				$banPlayer = $resultArr['player'];
+				$i = $i + 1;
+				if($result == $j){
+					$this->targetPlayer = $banPlayer;
+					$this->openInfoUI($sender);
+				}
+			}
+		});
+		$banInfo = $this->db->query("SELECT * FROM banPlayers;");
+		$array = $banInfo->fetchArray(SQLITE3_ASSOC);	
+		if (empty($array)) {
+			$sender->sendMessage($this->message["NoBanPlayers"]);
+			return true;
+		}
+		$form->setTitle($this->message["BanListTitle"]);
+		$form->setContent($this->message["BanListContent"]);
+		$banInfo = $this->db->query("SELECT * FROM banPlayers;");
+		$i = -1;
+		while ($resultArr = $banInfo->fetchArray(SQLITE3_ASSOC)) {
+			$j = $i + 1;
+			$banPlayer = $resultArr['player'];
+			$form->addButton(TextFormat::BOLD . "$banPlayer");
+			$i = $i + 1;
+		}
+		$form->sendToPlayer($sender);
+		return $form;
+	}
+	
 	public function openInfoUI($sender){
-		$form = $this->createSimpleForm(function (Player $sender, array $data){
-		$result = $data[0];
+		$api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
+		$form = $api->createSimpleForm(function (Player $sender, int $data = null){
+		$result = $data;
 		if($result === null){
 			return true;
 		}
@@ -194,6 +199,7 @@ class Main extends PluginBase implements Listener {
 		$form->setContent(str_replace(["{day}", "{hour}", "{minute}", "{second}", "{reason}"], [$day, $hour, $minute, $second, $reason], $this->message["InfoUIContent"]));
 		$form->addButton($this->message["InfoUIUnBanButton"]);
 		$form->sendToPlayer($sender);
+		return $form;
 	}
 
 	public function onPlayerLogin(PlayerPreLoginEvent $event){
@@ -233,56 +239,6 @@ class Main extends PluginBase implements Listener {
 					}
 				}
 				$i = $i + 1;
-			}
-		}
-	}
-	
-	public function onPlayerQuit(PlayerQuitEvent $ev){
-		$player = $ev->getPlayer();
-		foreach($this->forms as $id => $form){
-			if($form->isRecipient($player)){
-				unset($this->forms[$id]);
-				break;
-			}
-		}
-	}
-	
-	public function createSimpleForm(callable $function = null) : SimpleForm {
-		$this->formCount++;
-		$form = new SimpleForm($this->formCount, $function);
-		if($function !== null){
-			$this->forms[$this->formCount] = $form;
-		}
-		return $form;
-	}
-	
-	public function createCustomForm(callable $function = null) : CustomForm {
-		$this->formCount++;
-        $form = new CustomForm($this->formCount, $function);
-        $this->forms[$this->formCount] = $form;
-        return $form;
-    }
-	
-	public function onPacketReceived(DataPacketReceiveEvent $ev) : void {
-		$pk = $ev->getPacket();
-		if($pk instanceof ModalFormResponsePacket){
-			$player = $ev->getPlayer();
-			$formId = $pk->formId;
-			$data = json_decode($pk->formData, true);
-			if(isset($this->forms[$formId])){
-				$form = $this->forms[$formId];
-				if(!$form->isRecipient($player)){
-					return;
-				}
-				$callable = $form->getCallable();
-				if(!is_array($data)){
-					$data = [$data];
-				}
-				if($callable !== null) {
-					$callable($ev->getPlayer(), $data);
-				}
-				unset($this->forms[$formId]);
-				$ev->setCancelled();
 			}
 		}
 	}
