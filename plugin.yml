@@ -12,12 +12,3 @@ commands:
  tcheck:
   description: "Check ban list"
   permission: use.tcheck
-  
-permissions:
- use.tban:
-  default: op
-  description: Use /tban command
-  
- use.tcheck:
-  default: op
-  description: Use /tcheck command
