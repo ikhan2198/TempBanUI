@@ -6,7 +6,7 @@
 ---
 
 ## HOW TO INSTALL
-* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/35763/TempBanUI_dev-46.phar)
+* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/35797/TempBanUI_dev-51.phar)
 * Step 2: Put it on your plugins folder
 * Step 3: Download [FormAPI.phar](http://festyy.com/wHIglq)
 * Step 4: Put it on your plugins folder
