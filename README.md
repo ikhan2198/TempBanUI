@@ -1,4 +1,4 @@
-# TempBanUI
+# TempBanUI [![](https://poggit.pmmp.io/shield.state/TempBanUI)](https://poggit.pmmp.io/p/TempBanUI)
 
 ## Advance Temporary Ban with UI
 ## [What's new?](https://github.com/SonsaYT04/TempBanUI/wiki)
