@@ -1,6 +1,6 @@
 name: TempBanUI
 main: SonsaYT\TempBanUI\Main
-api: [3.0.0]
+api: [3.0.5]
 version: 1.5
 author: SonsaYT
 
