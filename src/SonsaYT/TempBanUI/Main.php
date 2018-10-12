@@ -86,12 +86,13 @@ class Main extends PluginBase implements Listener {
 						$banInfo->bindValue(":banTime", $banTime);
 						$banInfo->bindValue(":reason", $data[4]);
 						$banInfo->bindValue(":staff", $sender->getName());
-						$result = $banInfo->execute();
+						$banInfo->execute();
 						$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$data[1], $data[2], $data[3], $data[4], $sender->getName()], $this->message["KickBanMessage"]));
 						$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4], $sender->getName()], $this->message["BroadcastBanMessage"]));
 						foreach($this->playerList as $player){
 							unset($this->playerList[strtolower($player->getName())]);
 						}
+						return true;
 					}
 				}
 				$c++;
