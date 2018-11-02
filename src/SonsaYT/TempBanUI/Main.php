@@ -8,13 +8,15 @@ use pocketmine\command\Command;
 use pocketmine\command\CommandSender;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerPreLoginEvent;
+use pocketmine\event\entity\EntityDamageEvent;
+use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 
 class Main extends PluginBase implements Listener {
 
-	public $playerList = [];
-	public $targetPlayer;
+	public $staffList = [];
+	public $targetPlayer = [];
 	
     public function onEnable() {
 		$this->getServer()->getPluginManager()->registerEvents($this, $this);
@@ -26,6 +28,8 @@ class Main extends PluginBase implements Listener {
 		"KickBanMessage" => "§dYou are banned by §b{staff} §dfor §b{day} §dday/s, §b{hour} §dhour/s, §b{minute} §dminute/s. \n§dReason: §b{reason}",
 		"LoginBanMessage" => "§dYou are still banned for §b{day} §dday/s, §b{hour} §dhour/s, §b{minute} §dminute/s, §b{second} §dsecond/s. \n§dReason: §b{reason} \n§dBanned by: §b{staff}",
 		"BanMyself" => "§cYou can't ban yourself",
+		"BanModeOn" => "§bBan mode on",
+		"BanModeOff" => "§cBan mode off",
 		"NoBanPlayers" => "§bNo ban players",
 		"UnBanPlayer" => "§b{player} has been unban",
 		"AutoUnBanPlayer" => "§b{player} has been auto unban. Ban time already done",
@@ -41,7 +45,13 @@ class Main extends PluginBase implements Listener {
 			case "tban":
 				if($sender instanceof Player) {
 					if($sender->hasPermission("use.tban")){
-						$this->openTbanUI($sender);
+						if(isset($this->staffList[$sender->getName()])){
+							unset($this->staffList[$sender->getName()]);
+							$sender->sendMessage($this->message["BanModeOff"]);
+						} else {
+							$this->staffList[$sender->getName()] = $sender;
+							$sender->sendMessage($this->message["BanModeOn"]);
+						}
 					}
 				}
 				else{
@@ -60,56 +70,57 @@ class Main extends PluginBase implements Listener {
 		return true;
     }
 	
-	public function openTbanUI($sender){
+	public function hitBan(EntityDamageEvent $event){
+		if($event instanceof EntityDamageByEntityEvent) {
+			$damager = $event->getDamager();
+			$victim = $event->getEntity();
+			if($damager instanceof Player && $victim instanceof Player){
+				if(isset($this->staffList[$damager->getName()])){
+					$event->setCancelled(true);
+					$this->targetPlayer[$damager->getName()] = $victim;
+					$this->openTbanUI($damager);
+				}
+			}
+		}
+	}
+	
+	public function openTbanUI($player){
 		$api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
-		$form = $api->createCustomForm(function (Player $sender, array $data = null){
+		$form = $api->createCustomForm(function (Player $player, array $data = null){
 			$result = $data[0];
 			if($result === null){
 				return true;
 			}
-			$c = 0;
-			foreach($this->playerList as $player){
-				if($result == $c){
-					$target = $player->getPlayer();	
-					if($target instanceof Player){
-						if($target->getName() == $sender->getName()){
-							$player->sendMessage($this->message["BanMyself"]);
-							return true;
-						}
-						$now = time();
-						$day = ($data[1] * 86400);
-						$hour = ($data[2] * 3600);
-						$min = ($data[3] * 60);
-						$banTime = $now + $day + $hour + $min;
-						$banInfo = $this->db->prepare("INSERT OR REPLACE INTO banPlayers (player, banTime, reason, staff) VALUES (:player, :banTime, :reason, :staff);");
-						$banInfo->bindValue(":player", $target->getName());
-						$banInfo->bindValue(":banTime", $banTime);
-						$banInfo->bindValue(":reason", $data[4]);
-						$banInfo->bindValue(":staff", $sender->getName());
-						$banInfo->execute();
-						$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$data[1], $data[2], $data[3], $data[4], $sender->getName()], $this->message["KickBanMessage"]));
-						$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4], $sender->getName()], $this->message["BroadcastBanMessage"]));
-						foreach($this->playerList as $player){
-							unset($this->playerList[strtolower($player->getName())]);
-						}
-						return true;
-					}
+			$target = $this->targetPlayer[$player->getName()];
+			if($target instanceof Player){
+				$now = time();
+				$day = ($data[1] * 86400);
+				$hour = ($data[2] * 3600);
+				if($data[3] > 1){
+					$min = ($data[3] * 60);
+				} else {
+					$min = 60;
 				}
-				$c++;
+				$banTime = $now + $day + $hour + $min;
+				$banInfo = $this->db->prepare("INSERT OR REPLACE INTO banPlayers (player, banTime, reason, staff) VALUES (:player, :banTime, :reason, :staff);");
+				$banInfo->bindValue(":player", $target->getName());
+				$banInfo->bindValue(":banTime", $banTime);
+				$banInfo->bindValue(":reason", $data[4]);
+				$banInfo->bindValue(":staff", $player->getName());
+				$banInfo->execute();
+				$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["KickBanMessage"]));
+				$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["BroadcastBanMessage"]));
 			}
+			unset($this->targetPlayer[$player->getName()]);
 		});
-		foreach($this->getServer()->getOnlinePlayers() as $player){
-			$player = $player->getPlayer();
-			$this->playerList[strtolower($player->getName())] = $player;
-			$list[] = $player->getName();
-		}
+		$list[] = $this->targetPlayer[$player->getName()]->getName();
 		$form->setTitle(TextFormat::BOLD . "TEMPORARY BAN");
-		$form->addDropdown("\nChoose player", $list);
+		$form->addDropdown("\nTarget", $list);
 		$form->addSlider("Day/s", 0, 30, 1);
 		$form->addSlider("Hour/s", 0, 24, 1);
-		$form->addSlider("Minute/s", 1, 60, 5);
+		$form->addSlider("Minute/s", 0, 60, 5);
 		$form->addInput("Reason");
-		$form->sendToPlayer($sender);
+		$form->sendToPlayer($player);
 		return $form;
 	}
 	
@@ -127,7 +138,7 @@ class Main extends PluginBase implements Listener {
 				$banPlayer = $resultArr['player'];
 				$i = $i + 1;
 				if($result == $j){
-					$this->targetPlayer = $banPlayer;
+					$this->targetPlayer[$sender->getName()] = $banPlayer;
 					$this->openInfoUI($sender);
 				}
 			}
@@ -161,17 +172,18 @@ class Main extends PluginBase implements Listener {
 		}
 			switch($result){
 				case 0:
-					$banplayer = $this->targetPlayer;
+					$banplayer = $this->targetPlayer[$sender->getName()];
 					$banInfo = $this->db->query("SELECT * FROM banPlayers WHERE player = '$banplayer';");
 					$array = $banInfo->fetchArray(SQLITE3_ASSOC);
 					if (!empty($array)) {
 						$this->db->query("DELETE FROM banPlayers WHERE player = '$banplayer';");
 						$sender->sendMessage(str_replace(["{player}"], [$banplayer], $this->message["UnBanPlayer"]));
 					}
+					unset($this->targetPlayer[$sender->getName()]);
 				break;
 			}
 		});
-		$banPlayer = $this->targetPlayer;
+		$banPlayer = $this->targetPlayer[$sender->getName()];
 		$banInfo = $this->db->query("SELECT * FROM banPlayers WHERE player = '$banPlayer';");
 		$array = $banInfo->fetchArray(SQLITE3_ASSOC);
 		if (!empty($array)) {
@@ -180,13 +192,14 @@ class Main extends PluginBase implements Listener {
 			$staff = $array['staff'];
 			$now = time();
 			if($banTime < $now){
-				$banplayer = $this->targetPlayer;
+				$banplayer = $this->targetPlayer[$sender->getName()];
 				$banInfo = $this->db->query("SELECT * FROM banPlayers WHERE player = '$banplayer';");
 				$array = $banInfo->fetchArray(SQLITE3_ASSOC);
 				if (!empty($array)) {
 					$this->db->query("DELETE FROM banPlayers WHERE player = '$banplayer';");
 					$sender->sendMessage(str_replace(["{player}"], [$banplayer], $this->message["AutoUnBanPlayer"]));
 				}
+				unset($this->targetPlayer[$sender->getName()]);
 				return true;
 			}
 			$remainingTime = $banTime - $now;
