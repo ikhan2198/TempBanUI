@@ -14,10 +14,17 @@
 
 ---
 
+## HOW TO USE
+* Step 1: Type /tban to turn on ban mode
+* Step 2: Tap player that you want to ban
+* Step 3: Choose how long do you want and click Submit
+
+---
+
 ## COMMANDS & PERMISSIONS
 | COMMAND | DESCRIPTION | PERMISSION |
 |---|---|---|
-| /tban | Open TempBan UI | use.tban |
+| /tban | Turn On/Off Ban Mode | use.tban |
 | /tcheck | Check ban list | use.tcheck |
 
 ---
