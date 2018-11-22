@@ -1,7 +1,5 @@
 <?php
-
 namespace SonsaYT\TempBanUI;
-
 use pocketmine\plugin\PluginBase;
 use pocketmine\Player;
 use pocketmine\command\Command;
@@ -12,9 +10,7 @@ use pocketmine\event\entity\EntityDamageEvent;
 use pocketmine\event\entity\EntityDamageByEntityEvent;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
-
 class Main extends PluginBase implements Listener {
-
 	public $staffList = [];
 	public $targetPlayer = [];
 	
@@ -39,7 +35,6 @@ class Main extends PluginBase implements Listener {
 		"InfoUIUnBanButton" => "Unban Player",
 		)))->getAll();
     }
-
     public function onCommand(CommandSender $sender, Command $cmd, string $label,array $args) : bool {
 		switch($cmd->getName()){
 			case "tban":
@@ -91,27 +86,29 @@ class Main extends PluginBase implements Listener {
 			if($result === null){
 				return true;
 			}
-			$target = $this->targetPlayer[$player->getName()];
-			if($target instanceof Player){
-				$now = time();
-				$day = ($data[1] * 86400);
-				$hour = ($data[2] * 3600);
-				if($data[3] > 1){
-					$min = ($data[3] * 60);
-				} else {
-					$min = 60;
+			if(isset($this->targetPlayer[$player->getName()])){
+				$target = $this->targetPlayer[$player->getName()];
+				if($target instanceof Player){
+					$now = time();
+					$day = ($data[1] * 86400);
+					$hour = ($data[2] * 3600);
+					if($data[3] > 1){
+						$min = ($data[3] * 60);
+					} else {
+						$min = 60;
+					}
+					$banTime = $now + $day + $hour + $min;
+					$banInfo = $this->db->prepare("INSERT OR REPLACE INTO banPlayers (player, banTime, reason, staff) VALUES (:player, :banTime, :reason, :staff);");
+					$banInfo->bindValue(":player", $target->getName());
+					$banInfo->bindValue(":banTime", $banTime);
+					$banInfo->bindValue(":reason", $data[4]);
+					$banInfo->bindValue(":staff", $player->getName());
+					$banInfo->execute();
+					$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["KickBanMessage"]));
+					$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["BroadcastBanMessage"]));
 				}
-				$banTime = $now + $day + $hour + $min;
-				$banInfo = $this->db->prepare("INSERT OR REPLACE INTO banPlayers (player, banTime, reason, staff) VALUES (:player, :banTime, :reason, :staff);");
-				$banInfo->bindValue(":player", $target->getName());
-				$banInfo->bindValue(":banTime", $banTime);
-				$banInfo->bindValue(":reason", $data[4]);
-				$banInfo->bindValue(":staff", $player->getName());
-				$banInfo->execute();
-				$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["KickBanMessage"]));
-				$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["BroadcastBanMessage"]));
+				unset($this->targetPlayer[$player->getName()]);
 			}
-			unset($this->targetPlayer[$player->getName()]);
 		});
 		$list[] = $this->targetPlayer[$player->getName()]->getName();
 		$form->setTitle(TextFormat::BOLD . "TEMPORARY BAN");
@@ -217,7 +214,6 @@ class Main extends PluginBase implements Listener {
 		$form->sendToPlayer($sender);
 		return $form;
 	}
-
 	public function onPlayerLogin(PlayerPreLoginEvent $event){
 		$player = $event->getPlayer();
 		$banInfo = $this->db->query("SELECT * FROM banPlayers;");
@@ -259,5 +255,4 @@ class Main extends PluginBase implements Listener {
 			}
 		}
 	}
-
 }
