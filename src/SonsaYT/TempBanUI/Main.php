@@ -254,5 +254,8 @@ class Main extends PluginBase implements Listener {
 				$i = $i + 1;
 			}
 		}
+		if(isset($this->staffList[$player->getName()])){
+			unset($this->staffList[$player->getName()]);
+		}
 	}
 }
