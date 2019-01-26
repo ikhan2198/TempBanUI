@@ -1,5 +1,7 @@
 # TempBanUI
 
+Twitter: @RealSonsaYT
+
 ## Advance Temporary Ban with UI
 ## [What's new?](https://github.com/SonsaYT04/TempBanUI/wiki)
 
