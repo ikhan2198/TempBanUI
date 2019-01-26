@@ -15,16 +15,29 @@
 ---
 
 ## HOW TO USE
-* Step 1: Type /tban to turn on ban mode
-* Step 2: Tap player that you want to ban
+* Step 1: Type /tban to open player list
+* Step 2: Select a player
 * Step 3: Choose how long do you want and click Submit
+
+OR
+
+* Step 1: Type /tban <on|off> to turn hit player ban
+* Step 2: Tap player
+* Step 3: Choose how long do you want and click Submit
+
+OR
+
+* Step 1: Type /tban name to ban player
+* Step 2: Choose how long do you want and click Submit
 
 ---
 
 ## COMMANDS & PERMISSIONS
 | COMMAND | DESCRIPTION | PERMISSION |
 |---|---|---|
-| /tban | Turn On/Off Ban Mode | use.tban |
+| /tban | Open player list | use.tban |
+| /tban <on - off> | Turn on/off hit ban | use.tban |
+| /tban name | Ban player using name | use.tban |
 | /tcheck | Check ban list | use.tcheck |
 
 ---
