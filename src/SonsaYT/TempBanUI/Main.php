@@ -125,6 +125,10 @@ class Main extends PluginBase implements Listener {
 				return true;
 			}
 			if(isset($this->targetPlayer[$player->getName()])){
+				if($this->targetPlayer[$player->getName()] == $player->getName()){
+					$player->sendMessage($this->message["BanMyself"]);
+					return true;
+				}
 				$now = time();
 				$day = ($data[1] * 86400);
 				$hour = ($data[2] * 3600);
@@ -143,10 +147,8 @@ class Main extends PluginBase implements Listener {
 				$target = $this->getServer()->getPlayerExact($this->targetPlayer[$player->getName()]);
 				if($target instanceof Player){
 					$target->kick(str_replace(["{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["KickBanMessage"]));
-					$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$target->getName(), $data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["BroadcastBanMessage"]));
-				} else {
-					$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$this->targetPlayer[$player->getName()], $data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["BroadcastBanMessage"]));
 				}
+				$this->getServer()->broadcastMessage(str_replace(["{player}", "{day}", "{hour}", "{minute}", "{reason}", "{staff}"], [$this->targetPlayer[$player->getName()], $data[1], $data[2], $data[3], $data[4], $player->getName()], $this->message["BroadcastBanMessage"]));
 				unset($this->targetPlayer[$player->getName()]);
 
 			}
