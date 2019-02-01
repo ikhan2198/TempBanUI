@@ -8,7 +8,7 @@ Twitter: [@RealSonsaYT](https://twitter.com/RealSonsaYT)
 ---
 
 ## HOW TO INSTALL
-* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/50240/TempBanUI_dev-70.phar)
+* Step 1: Download [TempBanUI.phar](https://poggit.pmmp.io/r/50989/TempBanUI_dev-76.phar)
 * Step 2: Put it on your plugins folder
 * Step 3: Download [FormAPI.phar](http://festyy.com/wHIglq)
 * Step 4: Put it on your plugins folder
