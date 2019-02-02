@@ -166,22 +166,12 @@ class Main extends PluginBase implements Listener {
 
 	public function openTcheckUI($player){
 		$api = $this->getServer()->getPluginManager()->getPlugin("FormAPI");
-		$form = $api->createSimpleForm(function (Player $player, int $data = null){
-		$result = $data;
-		if($result === null){
-			return true;
-		}
-			$banInfo = $this->db->query("SELECT * FROM banPlayers;");
-			$i = -1;
-			while ($resultArr = $banInfo->fetchArray(SQLITE3_ASSOC)) {
-				$j = $i + 1;
-				$banPlayer = $resultArr['player'];
-				$i = $i + 1;
-				if($result == $j){
-					$this->targetPlayer[$player->getName()] = $banPlayer;
-					$this->openInfoUI($player);
-				}
+		$form = $api->createSimpleForm(function (Player $player, $data = null){
+			if($data === null){
+				return true;
 			}
+			$this->targetPlayer[$player->getName()] = $data;
+			$this->openInfoUI($player);
 		});
 		$banInfo = $this->db->query("SELECT * FROM banPlayers;");
 		$array = $banInfo->fetchArray(SQLITE3_ASSOC);	
@@ -196,7 +186,7 @@ class Main extends PluginBase implements Listener {
 		while ($resultArr = $banInfo->fetchArray(SQLITE3_ASSOC)) {
 			$j = $i + 1;
 			$banPlayer = $resultArr['player'];
-			$form->addButton(TextFormat::BOLD . "$banPlayer");
+			$form->addButton(TextFormat::BOLD . "$banPlayer", -1, "", $banPlayer);
 			$i = $i + 1;
 		}
 		$form->sendToPlayer($player);
