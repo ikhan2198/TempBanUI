@@ -250,42 +250,26 @@ class Main extends PluginBase implements Listener {
 	
 	public function onPlayerLogin(PlayerPreLoginEvent $event){
 		$player = $event->getPlayer();
-		$banInfo = $this->db->query("SELECT * FROM banPlayers;");
-		$array = $banInfo->fetchArray(SQLITE3_ASSOC);	
+		$banplayer = $player->getName();
+		$banInfo = $this->db->query("SELECT * FROM banPlayers WHERE player = '$banplayer';");
+		$array = $banInfo->fetchArray(SQLITE3_ASSOC);
 		if (!empty($array)) {
-			$banInfo = $this->db->query("SELECT * FROM banPlayers;");
-			$i = -1;
-			while ($resultArr = $banInfo->fetchArray(SQLITE3_ASSOC)) {
-				$j = $i + 1;
-				$banplayer = $resultArr['player'];
-				if($player->getName() == $banplayer){
-					$banInfo = $this->db->query("SELECT * FROM banPlayers WHERE player = '$banplayer';");
-					$array = $banInfo->fetchArray(SQLITE3_ASSOC);
-					if (!empty($array)) {
-						$banTime = $array['banTime'];
-						$reason = $array['reason'];
-						$staff = $array['staff'];
-						$now = time();
-						if($banTime > $now){
-							$remainingTime = $banTime - $now;
-							$day = floor($remainingTime / 86400);
-							$hourSeconds = $remainingTime % 86400;
-							$hour = floor($hourSeconds / 3600);
-							$minuteSec = $hourSeconds % 3600;
-							$minute = floor($minuteSec / 60);
-							$remainingSec = $minuteSec % 60;
-							$second = ceil($remainingSec);
-							$player->close("", str_replace(["{day}", "{hour}", "{minute}", "{second}", "{reason}", "{staff}"], [$day, $hour, $minute, $second, $reason, $staff], $this->message["LoginBanMessage"]));
-						} else {
-							$banInfo = $this->db->query("SELECT * FROM banPlayers WHERE player = '$banplayer';");
-							$array = $banInfo->fetchArray(SQLITE3_ASSOC);
-							if (!empty($array)) {
-								$this->db->query("DELETE FROM banPlayers WHERE player = '$banplayer';");
-							}
-						}
-					}
-				}
-				$i = $i + 1;
+			$banTime = $array['banTime'];
+			$reason = $array['reason'];
+			$staff = $array['staff'];
+			$now = time();
+			if($banTime > $now){
+				$remainingTime = $banTime - $now;
+				$day = floor($remainingTime / 86400);
+				$hourSeconds = $remainingTime % 86400;
+				$hour = floor($hourSeconds / 3600);
+				$minuteSec = $hourSeconds % 3600;
+				$minute = floor($minuteSec / 60);
+				$remainingSec = $minuteSec % 60;
+				$second = ceil($remainingSec);
+				$player->close("", str_replace(["{day}", "{hour}", "{minute}", "{second}", "{reason}", "{staff}"], [$day, $hour, $minute, $second, $reason, $staff], $this->message["LoginBanMessage"]));
+			} else {
+				$this->db->query("DELETE FROM banPlayers WHERE player = '$banplayer';");
 			}
 		}
 		if(isset($this->staffList[$player->getName()])){
