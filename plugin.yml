@@ -1,4 +1,4 @@
-name: TempBanUI
+name: TempBanUIS
 main: SonsaYT\TempBanUI\Main
 api: [3.0.0, 4.0.0]
 version: 2.3
