@@ -5,10 +5,10 @@ version: 2.3
 author: SonsaYT
 
 commands:
- tban:
+ mban:
   description: "Open TempBanUI"
   permission: use.mban
   
- tcheck:
+ mcheck:
   description: "Check ban list"
   permission: use.mcheck
