@@ -7,8 +7,8 @@ author: SonsaYT
 commands:
  tban:
   description: "Open TempBanUI"
-  permission: use.tban
+  permission: use.mban
   
  tcheck:
   description: "Check ban list"
-  permission: use.tcheck
+  permission: use.mcheck
