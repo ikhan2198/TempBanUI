@@ -44,9 +44,9 @@ class Main extends PluginBase implements Listener {
 	
     public function onCommand(CommandSender $sender, Command $cmd, string $label,array $args) : bool {
 		switch($cmd->getName()){
-			case "tban":
+			case "mban":
 				if($sender instanceof Player) {
-					if($sender->hasPermission("use.tban")){
+					if($sender->hasPermission("use.mban")){
 						if(count($args) == 0){
 							$this->openPlayerListUI($sender);
 						}
@@ -73,9 +73,9 @@ class Main extends PluginBase implements Listener {
 					return true;
 				}
 			break;
-			case "tcheck":
+			case "mcheck":
 				if($sender instanceof Player) {
-					if($sender->hasPermission("use.tcheck")){
+					if($sender->hasPermission("use.mcheck")){
 						$this->openTcheckUI($sender);
 					}
 				}
